@@ -83,22 +83,16 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_CLOUDFRONT_CDN_ID: ${{ secrets.AWS_CLOUDFRONT_CDN_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           if [ -z "$AWS_CLOUDFRONT_CDN_ID" ]; then
             echo "Warning: AWS_CLOUDFRONT_CDN_ID secret is not set, skipping CloudFront invalidation"
             exit 0
           fi
           
-          if [ -z "$AWS_REGION" ]; then
-            AWS_REGION="us-east-1"
-          fi
-          
           echo "Creating CloudFront invalidation for distribution: $AWS_CLOUDFRONT_CDN_ID"
           INVALIDATION_ID=$(aws cloudfront create-invalidation \
             --distribution-id $AWS_CLOUDFRONT_CDN_ID \
             --paths "/*" \
-            --region $AWS_REGION \
             --query 'Invalidation.Id' \
             --output text)
           
