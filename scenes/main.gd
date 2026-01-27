@@ -1,11 +1,12 @@
+## Main - Entry point scene that loads the game
 extends Node
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+	# Load and instantiate the RunRoot scene
+	var run_root_scene: PackedScene = load("res://scenes/run/run_root.tscn")
+	if run_root_scene:
+		var run_root: Node = run_root_scene.instantiate()
+		add_child(run_root)
+	else:
+		push_error("Failed to load RunRoot scene")

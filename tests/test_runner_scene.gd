@@ -5,8 +5,12 @@ extends Node
 ## Based on Starbuster's test_runner_scene.gd pattern
 
 const test_suites: Array[PackedScene] = [
-	# for each test suite, add its scene here
-	# preload('res://tests/systems/game_singleton_test.tscn'),
+	# Core singleton tests
+	preload('res://tests/run_state_test.tscn'),
+	preload('res://tests/rng_test.tscn'),
+	preload('res://tests/time_manager_test.tscn'),
+	preload('res://tests/economy_test.tscn'),
+	preload('res://tests/events_test.tscn'),
 ]
 
 # Specified test suites for development
