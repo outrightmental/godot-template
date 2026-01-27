@@ -1,0 +1,79 @@
+name: "Deploy Web to S3"
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GODOT_VERSION: 4.4.1
+  EXPORT_NAME: godot-template
+  PROJECT_PATH: .
+
+jobs:
+  build-and-deploy-web:
+    name: Build and Deploy Web to S3
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:4.4.1
+    steps:
+      - name: Checkout (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Setup Godot Export Templates
+        run: |
+          mkdir -v -p ~/.local/share/godot/export_templates/
+          mv /root/.local/share/godot/export_templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+
+      - name: Import assets (first run to generate .godot cache)
+        run: "godot --headless --path ${PROJECT_PATH} --import || true"
+
+      - name: Build Web Export
+        run: |
+          mkdir -v -p build/web
+          EXPORT_DIR="$(readlink -f build)"
+          cd $PROJECT_PATH
+          godot --headless --verbose --export-release "Web" "$EXPORT_DIR/web/index.html"
+
+      - name: List build artifacts
+        run: |
+          echo "Build artifacts:"
+          ls -lah build/web/
+
+      - name: Install AWS CLI
+        run: |
+          apt-get update
+          apt-get install -y awscli
+
+      - name: Deploy to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          if [ -z "$AWS_S3_BUCKET" ]; then
+            echo "Error: AWS_S3_BUCKET secret is not set"
+            exit 1
+          fi
+          
+          if [ -z "$AWS_REGION" ]; then
+            echo "Warning: AWS_REGION not set, defaulting to us-east-1"
+            AWS_REGION="us-east-1"
+          fi
+          
+          echo "Deploying to S3 bucket: $AWS_S3_BUCKET"
+          aws s3 sync build/web/ s3://$AWS_S3_BUCKET/ \
+            --region $AWS_REGION \
+            --delete \
+            --cache-control "max-age=3600" \
+            --metadata-directive REPLACE
+          
+          echo "Deployment completed successfully"
+          echo "Web build deployed to: http://$AWS_S3_BUCKET.s3-website-$AWS_REGION.amazonaws.com/index.html"
