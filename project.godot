@@ -16,18 +16,6 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
-[autoload]
-
-RNG="*res://autoload/rng.gd"
-TimeManager="*res://autoload/time_manager.gd"
-RunState="*res://autoload/run_state.gd"
-Economy="*res://autoload/economy.gd"
-Events="*res://autoload/events.gd"
-GameManager="*res://autoload/game_manager.gd"
-Game="*res://global/game.gd"
-GameState="*res://scripts/systems/game_state.gd"
-GameLoopManager="*res://scripts/systems/game_loop_manager.gd"
-
 [display]
 
 window/size/viewport_width=1920
