@@ -39,6 +39,7 @@ godot-template/
 │   └── sprites/        # Image and sprite files
 ├── autoload/           # Autoload (singleton) scripts
 ├── data/               # Game data files (JSON, CSV, etc.)
+├── global/             # Global game configuration and state
 ├── scenes/             # Godot scene files (.tscn)
 │   ├── board/          # Board-related scenes
 │   ├── run/            # Run/level scenes
@@ -66,6 +67,13 @@ The project is configured with the following autoload scripts (defined in `proje
 - **TimeManager** (`autoload/time_manager.gd`) - Game time management
 - **RunState** (`autoload/run_state.gd`) - Current run state tracking
 - **Economy** (`autoload/economy.gd`) - Game economy system
+- **Events** (`autoload/events.gd`) - Event system for game-wide communication
+- **GameManager** (`autoload/game_manager.gd`) - Central game management
+- **Game** (`global/game.gd`) - Global game state and configuration
+- **GameState** (`scripts/systems/game_state.gd`) - Game state management system
+- **GameLoopManager** (`scripts/systems/game_loop_manager.gd`) - Game loop coordination
+
+*Note: Some autoload scripts may need to be implemented based on your game's requirements.*
 
 ### Directory Conventions
 
